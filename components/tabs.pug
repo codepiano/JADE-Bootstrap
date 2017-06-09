@@ -1,22 +1,27 @@
 //- Tabs
-mixin tab-list(tabs,active)
-	ul.nav.nav-tabs(role="tablist")
-		each item,index in tabs
-			if (index === active)
-				li.active
-					a(href="#tab#{item}",role="tab",data-toggle="tab")= item
-			else
-				li
-					a(href="#tab#{item}",role="tab",data-toggle="tab")= item
-	.tab-content
-		block
-		
+mixin tabs(tabs, active, style, fade, pane_id_prefix)
+    -
+        tab_blocks = {}
+        if(!style) style = 'pill'
+        if(!fade) fade = false
+        if(!pane_id_prefix) pane_id_prefix = ''
+    block
+    ul.nav(role='tablist', class=`nav-${style}s`)&attributes(attributes.ul)
+        each value, index in tabs
+            - prefix_index = pane_id_prefix + index
+            li(class=index===active?'active':'')&attributes(attributes.li_attrs[index])
+                a(href=`#${prefix_index}`, role='tab', data-toggle=style, aria-controls=prefix_index)= value
+    .tab-content&attributes(attributes['tab-content'])
+        each value, index in tabs
+            - active_pane = index===active
+            - prefix_index = pane_id_prefix + index
+            .tab-pane(role='tabpanel', id=`${prefix_index}`, class={active:active_pane,fade:fade,in:fade&&active_pane})&attributes(attributes['tab-pane'])
+                - tab_blocks[index]()
+    - tab_blocks = {}
 
-//- Tab pane
-mixin tab(id,active)
-	if(active)
-		.tab-pane.active(id="tab#{id}")
-			block
-	else
-		.tab-pane(id="tab#{id}")
-			block
+mixin tabs-fade(tabs, active, style, pane_id_prefix)
+    +tabs(tabs, active, style, true, pane_id_prefix)&attributes(attributes)
+        block
+
+mixin tab(key)
+    - tab_blocks[key] = this.block
