@@ -1,42 +1,61 @@
-//- panel
+//- Panel
 mixin panel(type,title)
-	.panel(class=`panel-${type}`)
-		if title !== undefined
-			.panel-heading
-				h3.panel-title= title
-			.panel-body
-				block
-		else
-			.panel-body
-				block
+    - panel_blocks = {}
+    block
+    .panel(class=`panel-${type}`)&attributes(attributes.panel)
+        if !!title
+            .panel-heading&attributes(attributes.heading)= title
+        else
+            .panel-heading&attributes(attributes.heading)
+                - panel_blocks['heading']()
+        .panel-body&attributes(attributes.body)
+            if panel_blocks['body']
+                - panel_blocks['body']()
+        if panel_blocks['append']
+                - panel_blocks['append']()
+        if panel_blocks['footer']
+            .panel-footer&attributes(attributes.footer)
+                - panel_blocks['footer']()
+        - panel_blocks = {}
 
+mixin panel-heading()
+    - panel_blocks['heading'] = this.block
+
+mixin panel-body()
+    - panel_blocks['body'] = this.block
+
+mixin panel-footer()
+    - panel_blocks['footer'] = this.block
+
+mixin panel-body-append()
+    - panel_blocks['append'] = this.block
 
 //- panel-default
 mixin panel-default(title)
-	+panel("default",title)
-		block
+    +panel("default",title)&attributes(attributes)
+        block
 
 //- panel-primary
 mixin panel-primary(title)
-	+panel("primary",title)
-		block
-		
+    +panel("primary",title)&attributes(attributes)
+        block
+
 //- panel-success
 mixin panel-success(title)
-	+panel("success",title)
-		block
-		
+    +panel("success",title)&attributes(attributes)
+        block
+
 //- panel-info
 mixin panel-info(title)
-	+panel("info",title)
-		block
+    +panel("info",title)&attributes(attributes)
+        block
 
 //- panel-warning
 mixin panel-warning(title)
-	+panel("warning",title)
-		block
-		
+    +panel("warning",title)&attributes(attributes)
+        block
+
 //- panel-danger
 mixin panel-danger(title)
-	+panel("danger",title)
-		block
+    +panel("danger",title)&attributes(attributes)
+        block
