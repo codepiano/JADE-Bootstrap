@@ -1,3 +1,9 @@
+# 修改版
+
+[文档](http://blog.codepiano.com/JADE-Bootstrap/)
+
+按个人使用习惯修改
+
 # JADE-Bootstrap
 [Bootstrap](http://getbootstrap.com) framework written completely using mixins in [Pug](http://pugjs.org)
 
