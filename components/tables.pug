@@ -1,25 +1,50 @@
 //- table mixins
-mixin table(header,data,type)
-	- var type = type || ""
-	table.table(class="#{type}")
-		thead
-			tr
-				each head, i in header
-					th #{head}
-		tbody
-			each row,j in data
-				tr
-					each col,k in row
-						td #{col}
-	
-mixin table-striped(header,data)
-	+table(header,data,"table-striped")
+mixin table(header, data, type, auto_index)
+    -
+        var type = type || 'bordered'
+        if(Array.isArray(type)) {
+            type=type.map(function(style){return style.startsWith('table-')?style:'table-'+style})
+        }else{
+            if(!type.startsWith('table-')) {
+                type = 'table-' + type
+            }
+        }
+    table.table(class=type)
+        thead
+            tr
+                each head, i in header
+                    if !head.attr
+                        th= head.value || head
+                    else
+                        th&attributes(head.attr)= head.value || head
+        tbody
+            each row, j in data
+                tr
+                    each col, k in row
+                        if auto_index
+                            th(scope='row')= j+1
+                        if !col.is_th
+                            if !col.attr
+                                td= col.value || col
+                            else
+                                td&attributes(col.attr)= col.value || col
+                        else
+                            if !col.attr
+                                th(scope='row')= col.value || col
+                            else
+                                th(scope='row')&attributes(col.attr)= col.value || col
 
-mixin table-bordered(header,data)
-	+table(header,data,"table-bordered")
+mixin table-indexed(header, data, type)
+    +table(header, data, type, true)
 
-mixin table-hover(header,data)
-	+table(header,data,"table-hover")
+mixin table-striped(header, data, auto_index)
+    +table(header, data, 'striped', auto_index)
 
-mixin table-condensed(header,data)
-	+table(header,data,"table-condensed")
+mixin table-bordered(header, data, auto_index)
+    +table(header, data, 'bordered', auto_index)
+
+mixin table-hover(header, data, auto_index)
+    +table(header, data, 'hover', auto_index)
+
+mixin table-condensed(header, data, auto_index)
+    +table(header, data, 'condensed', auto_index)
