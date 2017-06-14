@@ -1,14 +1,36 @@
 //- modal
-mixin modal(title,id)
-	.modal.fade(id="#{id}",tabindex="-1",role="dialog",aria-labelledby="#{id}Label" aria-hidden="true")
-		.modal-dialog
-			.modal-content
-				.modal-header
-					button.close(type="button",data-dismiss="modal")
-						span(aria-hidden="true") &times;
-						span.sr-only Close
-					h4.modal-title(id="#{id}Label")= title
-				.modal-body
-					block
-				.modal-footer
-					button.btn.btn-default(type="button",data-dismiss="modal") Close
+mixin modal(id, title, content, close_text)
+    -
+        modal_blocks = {}
+    block
+    .modal.fade(id=id, tabindex='-1', role='dialog', aria-labelledby=id+'Label' aria-hidden='true')&attributes(attributes.modal)
+        .modal-dialog
+            .modal-content
+                if !!title
+                    .modal-header&attributes(attributes.header)
+                        h4.modal-title(id=`${id}Label`)= title
+                else
+                    .modal-header&attributes(attributes.header)
+                        - modal_blocks['header']()
+                .modal-body&attributes(attributes.body)
+                    if !!content
+                        = content
+                    else
+                        - modal_blocks['body']()
+                .modal-footer&attributes(attributes.footer)
+                    if !!close_text
+                        button.btn.btn-danger(type='button', data-dismiss='modal')= close_text
+                    else if modal_blocks['footer']
+                        - modal_blocks['footer']()
+                    else
+                        button.btn.btn-danger(type='button', data-dismiss='modal')= '关 闭'
+    - modal_blocks = {}
+
+mixin modal-header()
+    - modal_blocks['header'] = this.block
+
+mixin modal-body()
+    - modal_blocks['body'] = this.block
+
+mixin modal-footer()
+    - modal_blocks['footer'] = this.block
